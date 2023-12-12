@@ -40,14 +40,14 @@ public class PersonController {
 	}
 
 	@PostMapping
-	public ResponseEntity<PersonDto> adicionar(@RequestBody PersonDto person) {
-		service.adicionar(person);
-		return new ResponseEntity<>(person, HttpStatus.CREATED);
+	public ResponseEntity<PersonDto> adicionar(@RequestBody PersonDto personDto) {
+		service.adicionar(personDto);
+		return new ResponseEntity<>(personDto, HttpStatus.CREATED);
 	}
 
 	@PutMapping("/{id}")
-	public void atualizar(@PathVariable Long id, @RequestBody PersonDto person) {
-		service.atualizar(person, id);
+	public void atualizar(@PathVariable Long id, @RequestBody PersonDto personDto) {
+		service.atualizar(personDto, id);
 	}
 
 	@DeleteMapping("/{id}")

@@ -22,8 +22,8 @@ public class PersonService {
 
 	public List<PersonDto> findAll() {
 		List<Person> person = repository.findAll();
-		return person.stream().map(persons -> new ModelMapper().map(persons, PersonDto.class))
-			         .collect(Collectors.toList());
+		 return person.stream().map(persons -> new ModelMapper().map(persons, PersonDto.class))
+				.collect(Collectors.toList());
 	}
 
 	public Optional<PersonDto> findById(Long id) {
@@ -34,16 +34,14 @@ public class PersonService {
 		}
 
 		PersonDto personDto = new ModelMapper().map(person, PersonDto.class);
-		 return Optional.of(personDto);
+		return Optional.of(personDto);
 	}
 
 	public PersonDto adicionar(PersonDto personDto) {
-		Person p = new ModelMapper().map(personDto, Person.class);
+		Person person = new ModelMapper().map(personDto, Person.class);
 
-		repository.save(p);
-		
-		personDto.setId(p.getId());
-		
+		repository.save(person);
+		personDto.setId(person.getId());
 		return personDto;
 	}
 
@@ -51,7 +49,7 @@ public class PersonService {
 		Person person = repository.findById(id).orElseThrow(() -> new ResourceNotFoundException("ID não encontrado"));
 
 		BeanUtils.copyProperties(personDto, person, "id");
-		
+
 		repository.save(person);
 	}
 
