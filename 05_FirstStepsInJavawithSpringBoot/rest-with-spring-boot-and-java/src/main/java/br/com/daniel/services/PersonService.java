@@ -2,10 +2,14 @@ package br.com.daniel.services;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
+import org.modelmapper.ModelMapper;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import br.com.daniel.DTO.PersonDto;
 import br.com.daniel.exceptions.ResourceNotFoundException;
 import br.com.daniel.model.Person;
 import br.com.daniel.repositories.PersonRepository;
@@ -16,34 +20,39 @@ public class PersonService {
 	@Autowired
 	PersonRepository repository;
 
-	public List<Person> findAll() {
-		return repository.findAll();
+	public List<PersonDto> findAll() {
+		List<Person> person = repository.findAll();
+		return person.stream().map(persons -> new ModelMapper().map(persons, PersonDto.class))
+			         .collect(Collectors.toList());
 	}
 
-	public Optional<Person> findById(Long id) {
-		Optional<Person> p = repository.findById(id);
+	public Optional<PersonDto> findById(Long id) {
+		Optional<Person> person = repository.findById(id);
 
-		if (p.isEmpty()) {
+		if (person.isEmpty()) {
 			throw new ResourceNotFoundException("ID não encontrado");
 		}
 
-		return p;
+		PersonDto personDto = new ModelMapper().map(person, PersonDto.class);
+		 return Optional.of(personDto);
 	}
 
-	public Person adicionar(Person person) {
-		return repository.save(person);
+	public PersonDto adicionar(PersonDto personDto) {
+		Person p = new ModelMapper().map(personDto, Person.class);
+
+		repository.save(p);
+		
+		personDto.setId(p.getId());
+		
+		return personDto;
 	}
 
-	public void atualizar(Person person, Long id) {
+	public void atualizar(PersonDto personDto, Long id) {
+		Person person = repository.findById(id).orElseThrow(() -> new ResourceNotFoundException("ID não encontrado"));
 
-		Optional<Person> newPerson = repository.findById(id);
-
-		newPerson.get().setFirstName(person.getFirstName());
-		newPerson.get().setLastName(person.getLastName());
-		newPerson.get().setAddress(person.getAddress());
-		newPerson.get().setGender(person.getGender());
-
-		repository.save(newPerson.get());
+		BeanUtils.copyProperties(personDto, person, "id");
+		
+		repository.save(person);
 	}
 
 	public void deletar(Long id) {

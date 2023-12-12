@@ -16,8 +16,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import br.com.daniel.DTO.PersonDto;
 import br.com.daniel.exceptions.ResourceNotFoundException;
-import br.com.daniel.model.Person;
 import br.com.daniel.services.PersonService;
 
 @RestController
@@ -28,30 +28,25 @@ public class PersonController {
 	PersonService service;
 
 	@GetMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<Optional<Person>> findById(@PathVariable Long id) {
-		Optional<Person> p = service.findById(id);
+	public ResponseEntity<Optional<PersonDto>> findById(@PathVariable Long id) {
+		Optional<PersonDto> p = service.findById(id);
 		return new ResponseEntity<>(p, HttpStatus.OK);
 	}
 
 	@GetMapping
-	public ResponseEntity<List<Person>> findAll() {
-		List<Person> list = service.findAll();
+	public ResponseEntity<List<PersonDto>> findAll() {
+		List<PersonDto> list = service.findAll();
 		return new ResponseEntity<>(list, HttpStatus.OK);
 	}
 
 	@PostMapping
-	public ResponseEntity<Person> adicionar(@RequestBody Person person) {
+	public ResponseEntity<PersonDto> adicionar(@RequestBody PersonDto person) {
 		service.adicionar(person);
 		return new ResponseEntity<>(person, HttpStatus.CREATED);
 	}
 
 	@PutMapping("/{id}")
-	public void atualizar(@PathVariable Long id, @RequestBody Person person) {
-
-		if (service.findById(id).isEmpty()) {
-			new ResourceNotFoundException("ID não encontrado");
-		}
-
+	public void atualizar(@PathVariable Long id, @RequestBody PersonDto person) {
 		service.atualizar(person, id);
 	}
 
