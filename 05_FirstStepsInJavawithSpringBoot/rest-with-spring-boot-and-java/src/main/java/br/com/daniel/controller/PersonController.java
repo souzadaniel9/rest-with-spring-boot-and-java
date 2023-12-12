@@ -27,25 +27,28 @@ public class PersonController {
 	@Autowired
 	PersonService service;
 
-	@GetMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+	@GetMapping(value = "/{id}", produces = { MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE })
 	public ResponseEntity<Optional<PersonDto>> findById(@PathVariable Long id) {
 		Optional<PersonDto> p = service.findById(id);
 		return new ResponseEntity<>(p, HttpStatus.OK);
 	}
 
-	@GetMapping
+	@GetMapping(produces = { MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE })
 	public ResponseEntity<List<PersonDto>> findAll() {
 		List<PersonDto> list = service.findAll();
 		return new ResponseEntity<>(list, HttpStatus.OK);
 	}
 
-	@PostMapping
+	@PostMapping(produces = { MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE },
+				 consumes = { MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE })
 	public ResponseEntity<PersonDto> adicionar(@RequestBody PersonDto personDto) {
 		service.adicionar(personDto);
 		return new ResponseEntity<>(personDto, HttpStatus.CREATED);
 	}
 
-	@PutMapping("/{id}")
+	@PutMapping(value = "/{id}",
+				produces = { MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE },
+				consumes = { MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE })
 	public void atualizar(@PathVariable Long id, @RequestBody PersonDto personDto) {
 		service.atualizar(personDto, id);
 	}
