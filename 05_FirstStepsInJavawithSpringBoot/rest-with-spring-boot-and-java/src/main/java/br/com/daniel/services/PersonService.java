@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 
 import br.com.daniel.DTO.PersonDto;
 import br.com.daniel.controller.PersonController;
+import br.com.daniel.exceptions.RequiredObjectIsNullException;
 import br.com.daniel.exceptions.ResourceNotFoundException;
 import br.com.daniel.model.Person;
 import br.com.daniel.repositories.PersonRepository;
@@ -47,6 +48,8 @@ public class PersonService {
 	}
 
 	public PersonDto criar(PersonDto personDto) {
+		if(personDto == null) throw new RequiredObjectIsNullException();
+		
 		Person person = new ModelMapper().map(personDto, Person.class);
 		repository.save(person);
 		personDto.setId(person.getId());
@@ -56,16 +59,22 @@ public class PersonService {
 		return personDto;
 	}
 
-	public void atualizar(PersonDto personDto, Long id) {
-		Person person = repository.findById(id).orElseThrow(() -> new ResourceNotFoundException("ID não encontrado"));
-		BeanUtils.copyProperties(personDto, person, "id");
-
-		personDto.add(linkTo(methodOn(PersonController.class).findById(personDto.getId())).withSelfRel());
+	public PersonDto atualizar(PersonDto personDto) {
+		if(personDto == null) throw new RequiredObjectIsNullException();
 		
-		repository.save(person);
+		var person = repository.findById(personDto.getId())
+				.orElseThrow(() -> new ResourceNotFoundException("ID não encontrado"));
+		
+		BeanUtils.copyProperties(personDto, person);
+		PersonDto newPerson = new ModelMapper().map(repository.save(person), PersonDto.class);
+		newPerson.add(linkTo(methodOn(PersonController.class).findById(newPerson.getId())).withSelfRel());
+		return newPerson;
 	}
 
 	public void deletar(Long id) {
-		repository.deleteById(id);
+		var entity = repository.findById(id)
+				.orElseThrow(() -> new ResourceNotFoundException("ID não encontrado"));
+				
+		repository.delete(entity);
 	}
 }

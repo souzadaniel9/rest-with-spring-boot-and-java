@@ -44,11 +44,11 @@ public class PersonController {
 		return new ResponseEntity<>(personDto, HttpStatus.CREATED);
 	}
 
-	@PutMapping(value = "/{id}",
+	@PutMapping(
 				produces = { MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE },
 				consumes = { MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE })
-	public void atualizar(@PathVariable Long id, @RequestBody PersonDto personDto) {
-		service.atualizar(personDto, id);
+	public ResponseEntity<PersonDto> atualizar(@RequestBody PersonDto personDto) {
+		return new ResponseEntity<>(service.atualizar(personDto), HttpStatus.OK);
 	}
 
 	@DeleteMapping("/{id}")
