@@ -1,8 +1,15 @@
 package br.com.daniel.DTO;
 
+import java.io.Serializable;
 import java.util.Objects;
 
-public class PersonDto {
+import org.springframework.hateoas.RepresentationModel;
+
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+
+@JsonPropertyOrder({"id", "firstName", "lastName", "address", "gender"})
+public class PersonDto extends RepresentationModel<PersonDto> implements Serializable {
+	private static final long serialVersionUID = 1L;
 
 	private Long id;
 	private String firstName;

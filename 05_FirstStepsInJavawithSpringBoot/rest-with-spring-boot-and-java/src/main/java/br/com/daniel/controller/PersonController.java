@@ -1,7 +1,6 @@
 package br.com.daniel.controller;
 
 import java.util.List;
-import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -17,7 +16,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import br.com.daniel.DTO.PersonDto;
-import br.com.daniel.exceptions.ResourceNotFoundException;
 import br.com.daniel.services.PersonService;
 
 @RestController
@@ -28,9 +26,9 @@ public class PersonController {
 	PersonService service;
 
 	@GetMapping(value = "/{id}", produces = { MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE })
-	public ResponseEntity<Optional<PersonDto>> findById(@PathVariable Long id) {
-		Optional<PersonDto> p = service.findById(id);
-		return new ResponseEntity<>(p, HttpStatus.OK);
+	public ResponseEntity<PersonDto> findById(@PathVariable Long id) {
+		PersonDto personDto = service.findById(id);
+		return new ResponseEntity<>(personDto, HttpStatus.OK);
 	}
 
 	@GetMapping(produces = { MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE })
@@ -42,7 +40,7 @@ public class PersonController {
 	@PostMapping(produces = { MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE },
 				 consumes = { MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE })
 	public ResponseEntity<PersonDto> adicionar(@RequestBody PersonDto personDto) {
-		service.adicionar(personDto);
+		service.criar(personDto);
 		return new ResponseEntity<>(personDto, HttpStatus.CREATED);
 	}
 
@@ -55,10 +53,6 @@ public class PersonController {
 
 	@DeleteMapping("/{id}")
 	public ResponseEntity<?> deletar(@PathVariable Long id) {
-
-		if (service.findById(id).isEmpty()) {
-			new ResourceNotFoundException("ID não encontrado");
-		}
 
 		service.deletar(id);
 		return ResponseEntity.noContent().build();

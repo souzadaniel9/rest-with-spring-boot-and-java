@@ -20,8 +20,7 @@ public class Person implements Serializable {
 	@GeneratedValue(strategy = GenerationType.IDENTITY) // Estratégia de geração de ID de maneira automática
 	private Long id;
 
-	@Column(name = "first_name", nullable = false) // Atribui um nome para a coluna e o segundo comando diz que essa
-													// tabela não pode ser null
+	@Column(name = "first_name", nullable = false) // Atribui um nome para a coluna e o segundo comando diz que essa tabela não pode ser null
 	private String firstName;
 
 	@Column(name = "last_name", nullable = false)
@@ -37,6 +36,10 @@ public class Person implements Serializable {
 
 	public Long getId() {
 		return id;
+	}
+
+	public void setId(Long id) {
+		this.id = id;
 	}
 
 	public String getFirstName() {

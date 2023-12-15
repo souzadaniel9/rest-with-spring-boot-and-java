@@ -1,7 +1,9 @@
 package br.com.daniel.services;
 
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
+
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.modelmapper.ModelMapper;
@@ -10,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import br.com.daniel.DTO.PersonDto;
+import br.com.daniel.controller.PersonController;
 import br.com.daniel.exceptions.ResourceNotFoundException;
 import br.com.daniel.model.Person;
 import br.com.daniel.repositories.PersonRepository;
@@ -22,34 +25,43 @@ public class PersonService {
 
 	public List<PersonDto> findAll() {
 		List<Person> person = repository.findAll();
-		 return person.stream().map(persons -> new ModelMapper().map(persons, PersonDto.class))
+		 var persons = person.stream().map(perso -> new ModelMapper().map(perso, PersonDto.class))
 				.collect(Collectors.toList());
+		 
+		 persons.stream()
+		 		.forEach(p -> p.add(linkTo(methodOn(PersonController.class)
+		 		.findById(p.getId())).withSelfRel()));
+		 
+		 return persons;
 	}
 
-	public Optional<PersonDto> findById(Long id) {
-		Optional<Person> person = repository.findById(id);
-
-		if (person.isEmpty()) {
-			throw new ResourceNotFoundException("ID não encontrado");
-		}
+	public PersonDto findById(Long id) {
+		Person person = repository.findById(id)
+					.orElseThrow(() -> new ResourceNotFoundException("ID não encontrado"));
 
 		PersonDto personDto = new ModelMapper().map(person, PersonDto.class);
-		return Optional.of(personDto);
+		
+		personDto.add(linkTo(methodOn(PersonController.class).findById(id)).withSelfRel());
+		
+		return personDto;
 	}
 
-	public PersonDto adicionar(PersonDto personDto) {
+	public PersonDto criar(PersonDto personDto) {
 		Person person = new ModelMapper().map(personDto, Person.class);
-
 		repository.save(person);
 		personDto.setId(person.getId());
+		
+		personDto.add(linkTo(methodOn(PersonController.class).findById(personDto.getId())).withSelfRel());
+		
 		return personDto;
 	}
 
 	public void atualizar(PersonDto personDto, Long id) {
 		Person person = repository.findById(id).orElseThrow(() -> new ResourceNotFoundException("ID não encontrado"));
-
 		BeanUtils.copyProperties(personDto, person, "id");
 
+		personDto.add(linkTo(methodOn(PersonController.class).findById(personDto.getId())).withSelfRel());
+		
 		repository.save(person);
 	}
 
