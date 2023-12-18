@@ -17,26 +17,32 @@ import org.springframework.web.bind.annotation.RestController;
 
 import br.com.daniel.DTO.PersonDto;
 import br.com.daniel.services.PersonService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 
+@Tag(name = "Authentication Endpoint")
 @RestController
 @RequestMapping("/person")
 public class PersonController {
-
+						
 	@Autowired
 	PersonService service;
 
+	@Operation(summary = "Find a specific person by your ID")
 	@GetMapping(value = "/{id}", produces = { MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE })
 	public ResponseEntity<PersonDto> findById(@PathVariable Long id) {
 		PersonDto personDto = service.findById(id);
 		return new ResponseEntity<>(personDto, HttpStatus.OK);
 	}
 
+	@Operation(summary = "Find all people")
 	@GetMapping(produces = { MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE })
 	public ResponseEntity<List<PersonDto>> findAll() {
 		List<PersonDto> list = service.findAll();
 		return new ResponseEntity<>(list, HttpStatus.OK);
 	}
 
+	@Operation(summary = "Create a new person")
 	@PostMapping(produces = { MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE },
 				 consumes = { MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE })
 	public ResponseEntity<PersonDto> adicionar(@RequestBody PersonDto personDto) {
@@ -51,6 +57,7 @@ public class PersonController {
 		return new ResponseEntity<>(service.atualizar(personDto), HttpStatus.OK);
 	}
 
+	@Operation(summary = "Delete specific person by your ID")
 	@DeleteMapping("/{id}")
 	public ResponseEntity<?> deletar(@PathVariable Long id) {
 
