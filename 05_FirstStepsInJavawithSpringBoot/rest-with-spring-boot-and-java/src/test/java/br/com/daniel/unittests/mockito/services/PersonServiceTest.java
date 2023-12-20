@@ -46,15 +46,16 @@ class PersonServiceTest {
 
 	@Test
 	void testFindById() {
-		Person entity = input.mockEntity(1);
-		entity.setId(1L);
-
-		when(repository.findById(1L)).thenReturn(Optional.of(entity));
-
+		Person person = input.mockPerson(1); 
+		person.setId(1L);
+		
+		when(repository.findById(1L)).thenReturn(Optional.of(person));
+		
 		var result = service.findById(1L);
 		assertNotNull(result);
 		assertNotNull(result.getId());
 		assertNotNull(result.getLinks());
+		
 		assertTrue(result.toString().contains("links: [</person/1>;rel=\"self\"]"));
 		assertEquals("Addres Test1", result.getAddress());
 		assertEquals("First Name Test1", result.getFirstName());
@@ -64,7 +65,7 @@ class PersonServiceTest {
 
 	@Test
 	void testeCriar() {
-		Person entity = input.mockEntity(1);
+		Person entity = input.mockPerson(1);
 
 		Person persisted = entity;
 		persisted.setId(1L);
@@ -73,7 +74,7 @@ class PersonServiceTest {
 		personDto.setId(1L);
 
 		when(repository.save(entity)).thenReturn(persisted);
-		
+
 		var result = service.newPerson(personDto);
 		assertNotNull(result);
 		assertNotNull(result.getId());
@@ -84,33 +85,34 @@ class PersonServiceTest {
 		assertEquals("Last Name Test1", result.getLastName());
 		assertEquals("Female", result.getGender());
 	}
-	
+
 	@Test
 	void testeCriarSemParametros() {
-		Exception exception = assertThrows(RequiredObjectIsNullException.class, 
-				() -> { service.newPerson(null); });
-		
+		Exception exception = assertThrows(RequiredObjectIsNullException.class, () -> {
+			service.newPerson(null);
+		});
+
 		String expectedMessage = "Não é permitido persistir um objeto nulo!";
 		String actualMessage = exception.getMessage();
-		
+
 		assertTrue(actualMessage.contains(expectedMessage));
-		
+
 	}
 
 	@Test
 	void testeAtualizar() {
-		Person entity = input.mockEntity(1);
-		entity.setId(1L);
-		
-		Person persisted = entity;
+		Person person = input.mockPerson(1);
+		person.setId(1L);
+
+		Person persisted = person;
 		persisted.setId(1L);
 
 		PersonDto personDto = input.mockDto(1);
 		personDto.setId(1L);
 
-		when(repository.findById(1L)).thenReturn(Optional.of(entity));
-		when(repository.save(entity)).thenReturn(persisted);
-		
+		when(repository.findById(1L)).thenReturn(Optional.of(person));
+		when(repository.save(person)).thenReturn(persisted);
+
 		var result = service.update(personDto);
 		assertNotNull(result);
 		assertNotNull(result.getId());
@@ -121,27 +123,28 @@ class PersonServiceTest {
 		assertEquals("Last Name Test1", result.getLastName());
 		assertEquals("Female", result.getGender());
 	}
-	
+
 	@Test
 	void testeAtualizarSemParametros() {
-		Exception exception = assertThrows(RequiredObjectIsNullException.class, 
-				() -> { service.update(null); });
-		
+		Exception exception = assertThrows(RequiredObjectIsNullException.class, () -> {
+			service.update(null);
+		});
+
 		String expectedMessage = "Não é permitido persistir um objeto nulo!";
 		String actualMessage = exception.getMessage();
-		
+
 		assertTrue(actualMessage.contains(expectedMessage));
 	}
-	
+
 	@Test
 	void testDeletar() {
-		Person entity = input.mockEntity(1);
-		entity.setId(1L);
-		
-		when(repository.findById(1L)).thenReturn(Optional.of(entity));
+		Person person = input.mockPerson(1);
+		person.setId(1L);
+
+		when(repository.findById(1L)).thenReturn(Optional.of(person));
 		service.delete(1L);
 	}
-	
+
 	@Test
 	void testeFindAll() {
 		List<Person> list = input.mockEntityList();
@@ -151,39 +154,39 @@ class PersonServiceTest {
 		var people = service.findAll();
 		assertNotNull(people);
 		assertEquals(14, people.size());
-		
+
 		var personOne = people.get(1);
 		assertNotNull(personOne);
 		assertNotNull(personOne.getId());
 		assertNotNull(personOne.getLinks());
-		
+
 		assertTrue(personOne.toString().contains("links: [</person/1>;rel=\"self\"]"));
 		assertEquals("Addres Test1", personOne.getAddress());
 		assertEquals("First Name Test1", personOne.getFirstName());
 		assertEquals("Last Name Test1", personOne.getLastName());
 		assertEquals("Female", personOne.getGender());
-		
+
 		var personFour = people.get(4);
 		assertNotNull(personFour);
 		assertNotNull(personFour.getId());
 		assertNotNull(personFour.getLinks());
-		
+
 		assertTrue(personFour.toString().contains("links: [</person/4>;rel=\"self\"]"));
 		assertEquals("Addres Test4", personFour.getAddress());
 		assertEquals("First Name Test4", personFour.getFirstName());
 		assertEquals("Last Name Test4", personFour.getLastName());
 		assertEquals("Male", personFour.getGender());
-		
+
 		var personSeven = people.get(7);
 		assertNotNull(personSeven);
 		assertNotNull(personSeven.getId());
 		assertNotNull(personSeven.getLinks());
-		
+
 		assertTrue(personSeven.toString().contains("links: [</person/7>;rel=\"self\"]"));
 		assertEquals("Addres Test7", personSeven.getAddress());
 		assertEquals("First Name Test7", personSeven.getFirstName());
 		assertEquals("Last Name Test7", personSeven.getLastName());
 		assertEquals("Female", personSeven.getGender());
 	}
-	
+
 }
