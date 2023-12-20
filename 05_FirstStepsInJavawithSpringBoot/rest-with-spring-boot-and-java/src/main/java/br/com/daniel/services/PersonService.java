@@ -24,10 +24,20 @@ public class PersonService {
 	@Autowired
 	PersonRepository repository;
 
+	public PersonDto findById(Long id) {
+		Person person = repository.findById(id).orElseThrow(() -> new ResourceNotFoundException("ID não encontrado"));
+		
+		PersonDto personDto = new ModelMapper().map(person, PersonDto.class);
+		
+		personDto.add(linkTo(methodOn(PersonController.class).findById(id)).withSelfRel());
+		
+		return personDto;
+	}
+	
 	public List<PersonDto> findAll() {
 		List<Person> person = repository.findAll();
-		 var persons = person.stream().map(perso -> new ModelMapper().map(perso, PersonDto.class))
-				.collect(Collectors.toList());
+		 var persons = person.stream().map(
+				 perso -> new ModelMapper().map(perso, PersonDto.class)).collect(Collectors.toList());
 		 
 		 persons.stream()
 		 		.forEach(p -> p.add(linkTo(methodOn(PersonController.class)
@@ -36,18 +46,8 @@ public class PersonService {
 		 return persons;
 	}
 
-	public PersonDto findById(Long id) {
-		Person person = repository.findById(id)
-					.orElseThrow(() -> new ResourceNotFoundException("ID não encontrado"));
 
-		PersonDto personDto = new ModelMapper().map(person, PersonDto.class);
-		
-		personDto.add(linkTo(methodOn(PersonController.class).findById(id)).withSelfRel());
-		
-		return personDto;
-	}
-
-	public PersonDto criar(PersonDto personDto) {
+	public PersonDto newPerson(PersonDto personDto) {
 		if(personDto == null) throw new RequiredObjectIsNullException();
 		
 		Person person = new ModelMapper().map(personDto, Person.class);
@@ -59,9 +59,8 @@ public class PersonService {
 		return personDto;
 	}
 
-	public PersonDto atualizar(PersonDto personDto) {
+	public PersonDto update(PersonDto personDto) {
 		if(personDto == null) throw new RequiredObjectIsNullException();
-		
 		var person = repository.findById(personDto.getId())
 				.orElseThrow(() -> new ResourceNotFoundException("ID não encontrado"));
 		
@@ -71,10 +70,8 @@ public class PersonService {
 		return newPerson;
 	}
 
-	public void deletar(Long id) {
-		var entity = repository.findById(id)
-				.orElseThrow(() -> new ResourceNotFoundException("ID não encontrado"));
-				
-		repository.delete(entity);
+	public void delete(Long id) {
+		repository.findById(id).orElseThrow(() -> new ResourceNotFoundException("ID não encontrado"));
+		repository.deleteById(id);
 	}
 }

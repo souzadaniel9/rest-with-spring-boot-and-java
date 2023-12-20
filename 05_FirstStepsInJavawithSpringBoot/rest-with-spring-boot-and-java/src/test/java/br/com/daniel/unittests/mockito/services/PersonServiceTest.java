@@ -74,7 +74,7 @@ class PersonServiceTest {
 
 		when(repository.save(entity)).thenReturn(persisted);
 		
-		var result = service.criar(personDto);
+		var result = service.newPerson(personDto);
 		assertNotNull(result);
 		assertNotNull(result.getId());
 		assertNotNull(result.getLinks());
@@ -88,7 +88,7 @@ class PersonServiceTest {
 	@Test
 	void testeCriarSemParametros() {
 		Exception exception = assertThrows(RequiredObjectIsNullException.class, 
-				() -> { service.criar(null); });
+				() -> { service.newPerson(null); });
 		
 		String expectedMessage = "Não é permitido persistir um objeto nulo!";
 		String actualMessage = exception.getMessage();
@@ -111,7 +111,7 @@ class PersonServiceTest {
 		when(repository.findById(1L)).thenReturn(Optional.of(entity));
 		when(repository.save(entity)).thenReturn(persisted);
 		
-		var result = service.atualizar(personDto);
+		var result = service.update(personDto);
 		assertNotNull(result);
 		assertNotNull(result.getId());
 		assertNotNull(result.getLinks());
@@ -125,7 +125,7 @@ class PersonServiceTest {
 	@Test
 	void testeAtualizarSemParametros() {
 		Exception exception = assertThrows(RequiredObjectIsNullException.class, 
-				() -> { service.atualizar(null); });
+				() -> { service.update(null); });
 		
 		String expectedMessage = "Não é permitido persistir um objeto nulo!";
 		String actualMessage = exception.getMessage();
@@ -139,7 +139,7 @@ class PersonServiceTest {
 		entity.setId(1L);
 		
 		when(repository.findById(1L)).thenReturn(Optional.of(entity));
-		service.deletar(1L);
+		service.delete(1L);
 	}
 	
 	@Test
